@@ -73,14 +73,14 @@ function porterstemmer_too_short($word, $reset = FALSE) {
   static $min_chars = 0;
   if (!$min_chars || $reset) {
     // Get Search module's idea of minimum characters.
-    $min_chars = intval(variable_get('minimum_word_size', 3));
+    $min_chars = intval(config_get('search.settings', 'search_minimum_word_size'));
     // Porter algorithm cannot handle less than 2 characters.
     if ($min_chars < 2) {
       $min_chars = 2;
     }
   }
 
-  if (drupal_strlen($word) < $min_chars) {
+  if (backdrop_strlen($word) < $min_chars) {
     return TRUE;
   }
 
@@ -146,7 +146,7 @@ function porterstemmer_suffix(&$word, $oldend, $newend, &$didit, $other = NULL, 
   }
 
   // Is word long enough?
-  if (drupal_strlen($word) < $minlen) {
+  if (backdrop_strlen($word) < $minlen) {
     // Too short, so just return without replacing.
     return TRUE;
   }
@@ -175,7 +175,7 @@ function porterstemmer_suffix(&$word, $oldend, $newend, &$didit, $other = NULL, 
  */
 function porterstemmer_short_word($word, $r1) {
 
-  if (drupal_strlen($word) > $r1) {
+  if (backdrop_strlen($word) > $r1) {
     // R1 region exists, so this is not a short word.
     return FALSE;
   }
@@ -243,7 +243,7 @@ function porterstemmer_prestemming(&$word, &$r1, &$r2) {
   // Find R1 and R2. R1 is the region after the first non-vowel
   // following a vowel. R2 is the region after the first non-vowel
   // following a vowel in R1.
-  $max = drupal_strlen($word);
+  $max = backdrop_strlen($word);
   $r1 = $max;
   $r2 = $max;
   $matches = array();
@@ -253,12 +253,12 @@ function porterstemmer_prestemming(&$word, &$r1, &$r2) {
   // Exceptions to R1: If word begins with 'gener', 'commun', or 'arsen',
   // R1 is the remainder of the word.
   if (preg_match('/^(gener|commun|arsen)/', $word, $matches)) {
-    $r1 = drupal_strlen($matches[1]);
+    $r1 = backdrop_strlen($matches[1]);
   }
   elseif (preg_match($rdef, $word, $matches, PREG_OFFSET_CAPTURE)) {
     $r1 = $matches[1][1] + 1;
   };
-  $R1 = drupal_substr($word, $r1);
+  $R1 = backdrop_substr($word, $r1);
   if ($R1 && preg_match($rdef, $R1, $matches, PREG_OFFSET_CAPTURE)) {
     $r2 = $r1 + $matches[1][1] + 1;
   };
@@ -376,7 +376,7 @@ function porterstemmer_step1b(&$word, $r1) {
     if (!$done &&
       preg_match('/' . PORTERSTEMMER_DOUBLE . '$/', $tmp)) {
       // Drop last letter if it's a double-letter ending.
-      $tmp = drupal_substr($tmp, 0, -1);
+      $tmp = backdrop_substr($tmp, 0, -1);
       $done = TRUE;
     }
     if (!$done && porterstemmer_short_word($tmp, $r1)) {
@@ -547,7 +547,7 @@ function porterstemmer_step5(&$word, $r1, $r2) {
 
   // Delete e at end of word if in R2, or in R1 and not preceded by
   // a short syllable.
-  $len = drupal_strlen($tmp);
+  $len = backdrop_strlen($tmp);
   if (!$done && preg_match('/e$/', $tmp) &&
     ($len > $r2 ||
       ($len > $r1 &&
@@ -555,7 +555,7 @@ function porterstemmer_step5(&$word, $r1, $r2) {
           'e$/', $tmp) &&
         !preg_match('/' . PORTERSTEMMER_NOT_VOWEL . PORTERSTEMMER_VOWEL .
           PORTERSTEMMER_NOT_VOWEL_WXY . 'e$/', $tmp)))) {
-    $tmp = drupal_substr($tmp, 0, -1);
+    $tmp = backdrop_substr($tmp, 0, -1);
   }
 
   return porterstemmer_step_ending($word, $tmp);

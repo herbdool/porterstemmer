@@ -14,6 +14,11 @@
  */
 class PorterStemmerFunctionalTest extends BackdropWebTestCase {
 
+  /**
+   * @var User
+   */
+  private $superuser;
+
   public function setUp() {
     parent::setUp('porterstemmer', 'search');
 
@@ -172,7 +177,7 @@ class PorterStemmerOutput1UnitTest extends BackdropWebTestCase {
     }
 
     // Set min characters for search to 2 so we test whole word list
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2);
     porterstemmer_too_short( '', TRUE );
 
     $ran = 0;
@@ -546,7 +551,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
    */
   function testStemLength3UnitTest() {
     // Words 3 letters or less should not be stemmed if min word length is 3
-    variable_set( 'minimum_word_size', 3 );
+    config_set('search.settings', 'search_minimum_word_size', 3 );
     porterstemmer_too_short( '', TRUE );
 
     $words = array(
@@ -568,7 +573,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
    */
   function testStemLength4UnitTest() {
     // Words 4 letters or less should not be stemmed if min word length is 4
-    variable_set( 'minimum_word_size', 4 );
+    config_set('search.settings', 'search_minimum_word_size', 4 );
     porterstemmer_too_short( '', TRUE );
 
     $words = array(
@@ -592,37 +597,37 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
     // Test "shortness", using examples from algorithm web page,
     // as well as several variations on the word "administ...".
 
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2 );
     porterstemmer_too_short( '', TRUE );
 
-    $this->assertFalse( porterstemmer_short_word( 'administered', 2, 'Stemmer steps' ),
+    $this->assertFalse( porterstemmer_short_word( 'administered', 2),
       "administered should not be a short word" );
 
-    $this->assertFalse( porterstemmer_short_word( 'administer', 2, 'Stemmer steps'),
+    $this->assertFalse( porterstemmer_short_word( 'administer', 2),
       "administer should not be a short word" );
 
-    $this->assertFalse( porterstemmer_short_word( 'admin', 2, 'Stemmer steps' ),
+    $this->assertFalse( porterstemmer_short_word( 'admin', 2),
       "admin should not be a short word" );
 
-    $this->assertTrue( porterstemmer_short_word( 'bed', 3, 'Stemmer steps' ),
+    $this->assertTrue( porterstemmer_short_word( 'bed', 3),
       "bed should be a short word" );
 
-    $this->assertTrue( porterstemmer_short_word( 'shed', 4, 'Stemmer steps' ),
+    $this->assertTrue( porterstemmer_short_word( 'shed', 4),
       "shed should be a short word" );
 
-    $this->assertTrue( porterstemmer_short_word( 'shred', 5, 'Stemmer steps' ),
+    $this->assertTrue( porterstemmer_short_word( 'shred', 5),
       "shred should be a short word" );
 
-    $this->assertFalse( porterstemmer_short_word( 'bead', 4, 'Stemmer steps' ),
+    $this->assertFalse( porterstemmer_short_word( 'bead', 4),
       "bead should not be a short word" );
 
-    $this->assertFalse( porterstemmer_short_word( 'beds', 3, 'Stemmer steps' ),
+    $this->assertFalse( porterstemmer_short_word( 'beds', 3),
       "beds should not be a short word" );
 
-    $this->assertFalse( porterstemmer_short_word( 'bake', 3, 'Stemmer steps' ),
+    $this->assertFalse( porterstemmer_short_word( 'bake', 3),
       "bake should not be a short word" );
 
-    $this->assertTrue( porterstemmer_short_word( 'bak', 3, 'Stemmer steps' ),
+    $this->assertTrue( porterstemmer_short_word( 'bak', 3),
       "bak should be a short word" );
   }
 
@@ -631,7 +636,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
    */
   function testAdministered() {
 
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2 );
     porterstemmer_too_short( '', TRUE );
 
     $r1 = 0;
@@ -658,7 +663,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
    */
   function testBaked() {
 
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2 );
     porterstemmer_too_short( '', TRUE );
 
     $r1 = 0;
@@ -689,7 +694,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
     $r2 = 0;
     $word = 'geology';
 
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2 );
     porterstemmer_too_short( '', TRUE );
 
     porterstemmer_prestemming( $word, $r1, $r2 );
@@ -719,7 +724,7 @@ class PorterStemmerInternalsUnitTest extends BackdropWebTestCase {
     $worda = 'ied';
     $wordb = 'ies';
 
-    variable_set( 'minimum_word_size', 2 );
+    config_set('search.settings', 'search_minimum_word_size', 2 );
     porterstemmer_too_short( '', TRUE );
 
     porterstemmer_prestemming( $worda, $r1a, $r2a );
